@@ -1,4 +1,5 @@
 import { promises as fs } from "fs";
+import { nanoid } from "nanoid";
 import path from "path";
 
 const contactsPath = path.join("db", "contacts.json");
@@ -39,7 +40,7 @@ export async function removeContact(contactId) {
 export async function addContact(name, email, phone) {
     try {
         const contacts = await listContacts();
-        const newContact = { id: Date.now(), name, email, phone };
+        const newContact = { id: nanoid(22), name, email, phone };
         contacts.push(newContact);
         await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
         return newContact;

@@ -1,6 +1,10 @@
 
 import { listContacts, getContactById, removeContact, addContact } from "../services/contactsServices.js";
 import { createContactSchema } from "../schemas/contactsSchemas.js";
+import { nanoid } from 'nanoid';
+
+
+
 
 export const getAllContacts =async (req, res, next) => {
     try {
