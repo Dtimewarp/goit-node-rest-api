@@ -1,5 +1,5 @@
-// import contactsService from "../services/contactsServices.js";
-import { listContacts } from "../services/contactsServices.js";
+
+import { listContacts, getContactById } from "../services/contactsServices.js";
 
 export const getAllContacts =async (req, res, next) => {
     try {
@@ -10,7 +10,22 @@ export const getAllContacts =async (req, res, next) => {
     }
 };
 
-export const getOneContact = (req, res) => {};
+export const getOneContact = async (req, res) => {
+    const {id} =  req.params;
+    try {
+        const contact = await getContactById(id);
+
+        if (contact) {
+            res.status(200).json(contact)
+        } else {
+            res.status(404).json({message: "Not found"})
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server Error"})
+    }
+};
 
 export const deleteContact = (req, res) => {};
 
