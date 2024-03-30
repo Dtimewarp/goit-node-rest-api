@@ -1,5 +1,6 @@
 
-import { listContacts, getContactById, removeContact } from "../services/contactsServices.js";
+import { listContacts, getContactById, removeContact, addContact } from "../services/contactsServices.js";
+import { createContactSchema } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts =async (req, res, next) => {
     try {
@@ -41,6 +42,20 @@ export const deleteContact = async (req, res, next) => {
 
 };
 
-export const createContact = (req, res) => {};
+export const createContact = async (req, res, next) => {
+    const { error, value } = createContactSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json( {message: error.message});
+    }
+
+    const { name, email, phone } = value;
+
+    try {
+        const newContact = await addContact(name, email, phone);
+        res.status(201).json(newContact);
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const updateContact = (req, res) => {};
