@@ -1,10 +1,32 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { join } from 'path';
 
 import contactsRouter from "./routes/contactsRouter.js";
 
+const envPath = join(process.cwd(), '.env');
+dotenv.config({ path: envPath });
+
 const app = express();
+
+const DB_HOST = "mongodb+srv://commonUser:Grastias2015@testcluster.j1hwufc.mongodb.net/contacts";
+
+mongoose.set("strictQuery", true);
+
+mongoose
+  .connect(DB_HOST)
+  .then(() => {
+    app.listen(process.env.PORT);
+    console.log("Database connection successful");
+  })
+  .catch((error) => {
+    console.log(error.message);
+    process.exit(1);
+  });
+
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -21,6 +43,6 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
-app.listen(3000, () => {
-  console.log("Server is running. Use our API on port: 3000");
-});
+// app.listen(process.env.PORT, () => {
+//   console.log(`Server is running. Use our API on port: ${process.env.PORT}`);
+// });
