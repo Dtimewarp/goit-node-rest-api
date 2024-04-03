@@ -7,19 +7,19 @@ import { join } from 'path';
 
 import contactsRouter from "./routes/contactsRouter.js";
 
-const envPath = join(process.cwd(), '.env');
-dotenv.config({ path: envPath });
 
 const app = express();
 
-const DB_HOST = "mongodb+srv://commonUser:Grastias2015@testcluster.j1hwufc.mongodb.net/contacts";
+const envPath = join(process.cwd(), '.env');
+dotenv.config({ path: envPath });
+
+const {DB_HOST} = process.env;
 
 mongoose.set("strictQuery", true);
-
 mongoose
   .connect(DB_HOST)
   .then(() => {
-    app.listen(process.env.PORT);
+    app.listen(process.env);
     console.log("Database connection successful");
   })
   .catch((error) => {
