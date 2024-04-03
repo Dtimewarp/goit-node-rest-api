@@ -1,13 +1,24 @@
 import { promises as fs } from "fs";
 import { nanoid } from "nanoid";
 import path from "path";
+import { Contact } from "../db/contactModel.js";
 
-const contactsPath = path.join("db", "contacts.json");
+// const contactsPath = path.join("db", "contacts.json");
+
+// export async function listContacts() {
+//     try {
+//         const data = await fs.readFile(contactsPath, "utf-8");
+//         return JSON.parse(data);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 
 export async function listContacts() {
     try {
-        const data = await fs.readFile(contactsPath, "utf-8");
-        return JSON.parse(data);
+        const contacts = await Contact.find();
+        console.log(contacts);
+        return contacts;
     } catch (error) {
         console.log(error);
     }

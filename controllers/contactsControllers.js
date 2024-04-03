@@ -1,11 +1,11 @@
 
 import { listContacts, getContactById, removeContact, addContact, updateContactById  } from "../services/contactsServices.js";
 import { createContactSchema, updateContactSchema  } from "../schemas/contactsSchemas.js";
+import {Contact} from '../db/contactModel.js';
 
 
 
-
-export const getAllContacts =async (req, res, next) => {
+export const getAllContacts = async (req, res, next) => {
     try {
         const contacts = await listContacts();
         res.status(200).json(contacts);
