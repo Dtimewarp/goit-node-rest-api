@@ -1,7 +1,7 @@
 
-import { listContacts, getContactById, removeContact, addContact, updateContactById  } from "../services/contactsServices.js";
+import { listContacts, getContactById, removeContact, addContact, updateContactById, updateStatusContact  } from "../services/contactsServices.js";
 import { createContactSchema, updateContactSchema  } from "../schemas/contactsSchemas.js";
-import {Contact} from '../db/contactModel.js';
+
 
 
 
@@ -86,5 +86,23 @@ export const updateContact = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: 'Server error' });
+    }
+};
+
+export const updateContactStatus = async (req, res) => {
+    const { contactId } = req.params;
+    const { favorite } = req.body;
+
+    try {
+        const updatedContact = await updateStatusContact(contactId, { favorite });
+
+        if (updatedContact) {
+            res.status(200).json(updatedContact);
+        } else {
+            res.status(404).json({ message: "Not found" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
     }
 };

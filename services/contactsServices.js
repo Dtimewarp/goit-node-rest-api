@@ -1,18 +1,8 @@
 import { promises as fs } from "fs";
 import { nanoid } from "nanoid";
-import path from "path";
 import { Contact } from "../db/contactModel.js";
 
-// const contactsPath = path.join("db", "contacts.json");
 
-// export async function listContacts() {
-//     try {
-//         const data = await fs.readFile(contactsPath, "utf-8");
-//         return JSON.parse(data);
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
 
 export async function listContacts() {
     try {
@@ -36,12 +26,9 @@ export async function getContactById(contactId) {
 
 export async function removeContact(contactId) {
     try {
-        const contacts = await listContacts();
-        const removedContact = contacts.find(({ id }) => id === contactId);
+        const removedContact = await Contact.findByIdAndDelete(contactId);
         if (!removedContact) return null;
-
-        const updatedContacts = contacts.filter(({ id }) => id !== contactId);
-        await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
+        
         return removedContact;
     } catch (error) {
         console.log(error);
@@ -50,10 +37,7 @@ export async function removeContact(contactId) {
 
 export async function addContact(name, email, phone) {
     try {
-        const contacts = await listContacts();
-        const newContact = { id: nanoid(22), name, email, phone };
-        contacts.push(newContact);
-        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+        const newContact = await Contact.create({ name, email, phone });
         return newContact;
     } catch (error) {
         console.log(error);
@@ -75,5 +59,19 @@ export async function updateContactById(id, newData) {
         return updatedContact;
     } catch (error) {
         throw new Error('Failed to update contact');
+    }
+}
+
+export async function updateStatusContact(contactId, newData) {
+    try {
+        const updatedContact = await Contact.findByIdAndUpdate(
+            contactId,
+            { $set: newData },
+            { new: true }
+        );
+        return updatedContact;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Failed to update contact status");
     }
 }
