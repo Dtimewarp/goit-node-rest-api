@@ -44,23 +44,6 @@ export async function addContact(name, email, phone) {
     }
 }
 
-// export async function updateContactById(id, newData) {
-//     try {
-//         const data = await fs.readFile(contactsPath, 'utf-8');
-//         const contacts = JSON.parse(data);
-
-//         const index = contacts.findIndex((contact) => contact.id === id);
-//         if (index === -1) return null;
-
-//         const updatedContact = { ...contacts[index], ...newData };
-//         contacts[index] = updatedContact;
-
-//         await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-//         return updatedContact;
-//     } catch (error) {
-//         throw new Error('Failed to update contact');
-//     }
-// }
 export async function updateContactById(id, newData) {
     try {
         const updatedContact = await Contact.findByIdAndUpdate(
@@ -73,8 +56,6 @@ export async function updateContactById(id, newData) {
         throw new Error('Failed to update contact');
     }
 }
-
-
 
 export async function updateStatusContact(contactId, newData) {
     try {
