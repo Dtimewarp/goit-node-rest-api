@@ -7,14 +7,17 @@ export const createContactSchema = Joi.object({
 })
 
 export const updateContactSchema = Joi.object({
-
     name: Joi.string().min(1).max(255),
     email: Joi.string().email().max(255),
     phone: Joi.string().pattern(/^\+?\d{0,3}(\s|-)?\d{3}(\s|-)?\d{2}(\s|-)?\d{2}$/),
 });
 
-function validateContactUpdate(data) {
-    return updateContactSchema.validate(data, { abortEarly: false });
+function validateUpdateStatus(data) {
+    const schema = Joi.object({
+        favorite: Joi.boolean().required()
+    });
+
+    return schema.validate(data);
 }
 
-export { validateContactUpdate };
+export {validateUpdateStatus}

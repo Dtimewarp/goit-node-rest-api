@@ -13,13 +13,13 @@ const app = express();
 const envPath = join(process.cwd(), '.env');
 dotenv.config({ path: envPath });
 
-const {DB_HOST} = process.env;
+const {DB_HOST, PORT} = process.env;
 
 mongoose.set("strictQuery", true);
 mongoose
   .connect(DB_HOST)
   .then(() => {
-    app.listen(process.env.PORT);
+    app.listen(PORT);
     console.log("Database connection successful");
   })
   .catch((error) => {
