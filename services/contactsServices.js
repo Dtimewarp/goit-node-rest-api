@@ -49,7 +49,7 @@ export async function updateContactById(id, newData) {
         const updatedContact = await Contact.findByIdAndUpdate(
             id,
             newData,
-            { new: true } // Параметр new: true повертає оновлений об'єкт
+            { new: true } 
         );
         return updatedContact;
     } catch (error) {

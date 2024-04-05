@@ -2,7 +2,7 @@
 import { listContacts, getContactById, removeContact, addContact, updateContactById, updateStatusContact  } from "../services/contactsServices.js";
 import { createContactSchema, updateContactSchema  } from "../schemas/contactsSchemas.js";
 
-
+//GET ALL
 export const getAllContacts = async (req, res, next) => {
     try {
         const contacts = await listContacts();
@@ -12,6 +12,7 @@ export const getAllContacts = async (req, res, next) => {
     }
 };
 
+//GET by ID
 export const getOneContact = async (req, res) => {
     const {id} =  req.params;
     try {
@@ -29,6 +30,7 @@ export const getOneContact = async (req, res) => {
     }
 };
 
+//DELETE
 export const deleteContact = async (req, res, next) => {
     const {id} = req.params;
     try{
@@ -43,6 +45,7 @@ export const deleteContact = async (req, res, next) => {
 
 };
 
+//POST
 export const createContact = async (req, res, next) => {
     const { error, value } = createContactSchema.validate(req.body);
     if (error) {
@@ -59,18 +62,22 @@ export const createContact = async (req, res, next) => {
     }
 };
 
+// PUT
 export const updateContact = async (req, res) => {
     const { id } = req.params;
     const { body } = req;
 
     try {
-        // Виконайте валідацію даних перед оновленням
+        if (Object.keys(body).length === 0) {
+            return res.status(400).json({ message: 'Body must have at least one field' });
+        }
+
         const validation = updateContactSchema.validate(body, { abortEarly: false });
         if (validation.error) {
             return res.status(400).json({ message: validation.error.message });
         }
         
-        // Оновлення контакту за допомогою Mongoose
+        
         const updatedContact = await updateContactById(id, body);
 
         if (!updatedContact) {
@@ -84,6 +91,7 @@ export const updateContact = async (req, res) => {
     }
 };
 
+//PATCH
 export const updateContactStatus = async (req, res) => {
     const { contactId } = req.params;
     const { favorite } = req.body;

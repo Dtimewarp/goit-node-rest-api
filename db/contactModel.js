@@ -15,7 +15,8 @@ export const contactSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
     },
-});
+},
+{ versionKey: false });
 
 export const Contact = mongoose.model("Contact", contactSchema);
 
