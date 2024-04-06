@@ -1,6 +1,7 @@
 
 import { listContacts, getContactById, removeContact, addContact, updateContactById, updateStatusContact  } from "../services/contactsServices.js";
 import { createContactSchema, updateContactSchema, validateUpdateStatus  } from "../schemas/contactsSchemas.js";
+import { isValidId } from "../helpers/idValidation.js";
 
 //GET ALL
 export const getAllContacts = async (req, res, next) => {
@@ -13,36 +14,41 @@ export const getAllContacts = async (req, res, next) => {
 };
 
 //GET by ID
+
 export const getOneContact = async (req, res) => {
-    const {id} =  req.params;
-    try {
-        const contact = await getContactById(id);
+    const { id } = req.params;
+    
+    isValidId(req, res, async () => {
+        try {
+            const contact = await getContactById(id);
 
-        if (contact) {
-            res.status(200).json(contact)
-        } else {
-            res.status(404).json({message: "Not found"})
+            if (contact) {
+                res.status(200).json(contact);
+            } else {
+                res.status(404).json({ message: "Not found" });
+            }
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Server Error" });
         }
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Server Error"})
-    }
+    });
 };
 
 //DELETE
 export const deleteContact = async (req, res, next) => {
     const {id} = req.params;
-    try{
-        const deletedContact = await removeContact(id);
-        if (!deletedContact) {
-            return res.status(404).json({message: "Not found"});
+    isValidId(req, res, async () => {
+        try {
+            const deletedContact = await removeContact(id);
+            if (!deletedContact) {
+                return res.status(404).json({ message: "Not found" });
+            }
+            res.status(200).json(deletedContact);
+        } catch (error) {
+            next(error);
         }
-        res.status(200).json(deletedContact);
-    }catch (error) {
-        next(error);
-    }
-
+    });
 };
 
 //POST
@@ -68,6 +74,7 @@ export const updateContact = async (req, res) => {
     const { body } = req;
 
     try {
+        
         if (Object.keys(body).length === 0) {
             return res.status(400).json({ message: 'Body must have at least one field' });
         }
@@ -76,14 +83,22 @@ export const updateContact = async (req, res) => {
         if (validation.error) {
             return res.status(400).json({ message: validation.error.message });
         }
+
+        isValidId(req, res, async () => {
+            try {
                 
-        const updatedContact = await updateContactById(id, body);
+                const updatedContact = await updateContactById(id, body);
 
-        if (!updatedContact) {
-            return res.status(404).json({ message: 'Not found' });
-        }
+                if (!updatedContact) {
+                    return res.status(404).json({ message: 'Not found' });
+                }
 
-        return res.status(200).json(updatedContact);
+                return res.status(200).json(updatedContact);
+            } catch (error) {
+                console.error(error);
+                return res.status(500).json({ message: 'Server error' });
+            }
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Server error' });
@@ -96,8 +111,9 @@ export const updateContactStatus = async (req, res) => {
     const { error } = validateUpdateStatus(req.body);
 
     if (error) {
-        return res.status(400).json({message: error.details[0].message});
+        return res.status(400).json({ message: error.details[0].message });
     }
+
     const { favorite } = req.body;
 
     try {
@@ -113,3 +129,4 @@ export const updateContactStatus = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
