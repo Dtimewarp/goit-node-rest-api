@@ -2,6 +2,7 @@
 import { listContacts, getContactById, removeContact, addContact, updateContactById, updateStatusContact  } from "../services/contactsServices.js";
 import { createContactSchema, updateContactSchema, validateUpdateStatus  } from "../schemas/contactsSchemas.js";
 import { isValidId } from "../helpers/idValidation.js";
+import { Types } from 'mongoose';
 
 //GET ALL
 export const getAllContacts = async (req, res, next) => {
@@ -108,10 +109,14 @@ export const updateContact = async (req, res) => {
 //PATCH
 export const updateContactStatus = async (req, res) => {
     const { contactId } = req.params;
-    const { error } = validateUpdateStatus(req.body);
+    const { error: validationError } = validateUpdateStatus(req.body);
 
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
+    if (validationError) {
+        return res.status(400).json({ message: validationError.details[0].message });
+    }
+
+    if (!Types.ObjectId.isValid(contactId)) {
+        return res.status(400).json({ error: `${contactId} is not a valid ObjectId` });
     }
 
     const { favorite } = req.body;
@@ -129,4 +134,3 @@ export const updateContactStatus = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
-
