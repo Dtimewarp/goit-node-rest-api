@@ -1,5 +1,3 @@
-// import { promises as fs } from "fs";
-
 import { Contact } from "../db/contactModel.js";
 
 

@@ -1,23 +1,23 @@
 import mongoose from "mongoose";
 
-export const contactSchema = new mongoose.Schema({
+export const contactSchema = new mongoose.Schema(
+  {
     name: {
-    type: String,
-    required: [true, "Set name for contact"],
+      type: String,
+      required: [true, "Set name for contact"],
     },
     email: {
-    type: String,
+      type: String,
     },
     phone: {
-    type: String,
+      type: String,
     },
     favorite: {
-    type: Boolean,
-    default: false,
+      type: Boolean,
+      default: false,
     },
-},
-{ versionKey: false });
+  },
+  { versionKey: false }
+);
 
 export const Contact = mongoose.model("Contact", contactSchema);
-
-
