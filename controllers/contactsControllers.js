@@ -25,11 +25,15 @@ export const getOneContact = async (req, res) => {
         try {
             const contact = await getContactById(id);
 
-            if (contact) {
-                res.status(200).json(contact);
-            } else {
-                res.status(404).json({ message: "Not found" });
+            if (!contact) {
+                return res.status(404).json({ message: "Contact not found" });
             }
+
+            if (contact.owner.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: "You are not authorized to access this contact" });
+            }
+
+            res.status(200).json(contact);
 
         } catch (error) {
             console.error(error);
@@ -40,13 +44,26 @@ export const getOneContact = async (req, res) => {
 
 //DELETE
 export const deleteContact = async (req, res, next) => {
-    const {id} = req.params;
+    const { id } = req.params;
+
     isValidId(req, res, async () => {
         try {
-            const deletedContact = await removeContact(id);
-            if (!deletedContact) {
-                return res.status(404).json({ message: "Not found" });
+            const contact = await getContactById(id);
+
+            if (!contact) {
+                return res.status(404).json({ message: "Contact not found" });
             }
+
+            if (contact.owner.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: "You are not authorized to delete this contact" });
+            }
+
+            const deletedContact = await removeContact(id);
+            
+            if (!deletedContact) {
+                return res.status(404).json({ message: "Contact not found" });
+            }
+
             res.status(200).json(deletedContact);
         } catch (error) {
             next(error);
@@ -65,23 +82,25 @@ export const createContact = async (req, res, next) => {
     const ownerId = req.user._id; 
 
     try {
-        const existingContact = await Contact.findOne({ email });
+        const existingContact = await Contact.findOne({ email, owner: ownerId });
 
         if (existingContact) {
             return res.status(409).json({ message: 'Contact with this email already exists' });
         }
+
         const newContact = await addContact(name, email, phone, ownerId);
         res.status(201).json(newContact);
     } catch (error) {
-            console.error(error);
-            return res.status(500).json({ message: 'Server Error' });
-        }
+        console.error(error);
+        return res.status(500).json({ message: 'Server Error' });
+    }
 };
 
 // PUT
 export const updateContact = async (req, res) => {
     const { id } = req.params;
     const { body } = req;
+    const ownerId = req.user._id;
 
     try {
         if (Object.keys(body).length === 0) {
@@ -95,13 +114,12 @@ export const updateContact = async (req, res) => {
 
         isValidId(req, res, async () => {
             try {
-                
-                const updatedContact = await updateContactById(id, body);
-
-                if (!updatedContact) {
-                    return res.status(404).json({ message: 'Not found' });
+                const existingContact = await Contact.findOne({ _id: id, owner: ownerId });
+                if (!existingContact) {
+                    return res.status(404).json({ message: 'Contact not found' });
                 }
 
+                const updatedContact = await updateContactById(id, body);
                 return res.status(200).json(updatedContact);
             } catch (error) {
                 console.error(error);
@@ -130,15 +148,24 @@ export const updateContactStatus = async (req, res) => {
     const { favorite } = req.body;
 
     try {
-        const updatedContact = await updateStatusContact(contactId, { favorite });
+        const contact = await Contact.findById(contactId);
 
-        if (updatedContact) {
-            res.status(200).json(updatedContact);
-        } else {
-            res.status(404).json({ message: "Not found" });
+        if (!contact) {
+            return res.status(404).json({ message: "Contact not found" });
         }
+
+        if (contact.owner.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "You are not authorized to update this contact" });
+        }
+
+        contact.favorite = favorite;
+        await contact.save();
+
+        res.status(200).json(contact);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+
