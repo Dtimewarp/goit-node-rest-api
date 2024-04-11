@@ -35,7 +35,7 @@ export const registerUser = async (req, res) => {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
-  };
+};
 
   export const loginUser = async (req, res) => {
     const { SECRET_KEY } = process.env;
@@ -70,13 +70,13 @@ export const registerUser = async (req, res) => {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
-  };
+};
   
-export const logoutUser = async (req, res, next) => {
+export const logoutUser = async (req, res) => {
   try {
   
     if (!req.user) {
-      return res.status(401).json({ message: 'Not authorized-1' });
+      return res.status(401).json({ message: 'Not authorized' });
     }
 
     const userId = req.user._id;
@@ -84,7 +84,7 @@ export const logoutUser = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(401).json({ message: 'Not authorized-2' });
+      return res.status(401).json({ message: 'Not authorized' });
     }
 
     user.token = null;
@@ -99,18 +99,14 @@ export const logoutUser = async (req, res, next) => {
 
 export const getCurrentUser = async (req, res) => {
   try {
-      // Отримання id користувача з об'єкта req, який був доданий під час перевірки токена
+      
       const userId = req.user._id;
-
-      // Пошук користувача за id
       const user = await User.findById(userId);
 
-      // Перевірка наявності користувача
       if (!user) {
           return res.status(401).json({ message: 'Not authorized' });
       }
 
-      // Відправка даних користувача у відповідь
       return res.status(200).json({
           email: user.email,
           subscription: user.subscription

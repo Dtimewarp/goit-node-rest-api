@@ -9,7 +9,7 @@ export const verifyToken = async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
     
     if (!token) {
-        return res.status(401).json({ message: "Not authorized-v" });
+        return res.status(401).json({ message: "Not authorized" });
     }
     
     try {
@@ -20,7 +20,7 @@ export const verifyToken = async (req, res, next) => {
         const user = await User.findById(userId);
         
         if (!user || user.token !== token) {
-            return res.status(401).json({ message: "Not authorized-v2" });
+            return res.status(401).json({ message: "Not authorized" });
         }
         
         req.user = user;

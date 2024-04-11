@@ -3,11 +3,29 @@ import { listContacts, getContactById, removeContact, addContact, updateContactB
 import { createContactSchema, updateContactSchema, validateUpdateStatus  } from "../schemas/contactsSchemas.js";
 import { isValidId } from "../helpers/idValidation.js";
 import { Types } from 'mongoose';
+import { Contact } from "../db/contactModel.js";
+import { MongoServerError } from 'mongodb';
+import { User } from "../db/userModel.js";
+
 
 //GET ALL
+// export const getAllContacts = async (req, res, next) => {
+//     try {
+//         const contacts = await listContacts();
+//         res.status(200).json(contacts);
+//     } catch(error) {
+//         next(error);
+//     }
+// };
+
 export const getAllContacts = async (req, res, next) => {
     try {
-        const contacts = await listContacts();
+        // Отримання ID поточного користувача
+        const userId = req.user._id;
+
+        // Запит на отримання контактів, що належать поточному користувачу
+        const contacts = await Contact.find({ owner: userId });
+
         res.status(200).json(contacts);
     } catch(error) {
         next(error);
@@ -53,20 +71,28 @@ export const deleteContact = async (req, res, next) => {
 };
 
 //POST
+
 export const createContact = async (req, res, next) => {
     const { error, value } = createContactSchema.validate(req.body);
     if (error) {
-        return res.status(400).json( {message: error.message});
+        return res.status(400).json({ message: error.message });
     }
 
     const { name, email, phone } = value;
+    const ownerId = req.user._id; 
 
     try {
-        const newContact = await addContact(name, email, phone);
+        const existingContact = await Contact.findOne({ email });
+
+        if (existingContact) {
+            return res.status(409).json({ message: 'Contact with this email already exists' });
+        }
+        const newContact = await addContact(name, email, phone, ownerId);
         res.status(201).json(newContact);
     } catch (error) {
-        next(error);
-    }
+            console.error(error);
+            return res.status(500).json({ message: 'Server Error' });
+        }
 };
 
 // PUT
