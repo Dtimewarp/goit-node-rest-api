@@ -4,28 +4,13 @@ import { createContactSchema, updateContactSchema, validateUpdateStatus  } from 
 import { isValidId } from "../helpers/idValidation.js";
 import { Types } from 'mongoose';
 import { Contact } from "../db/contactModel.js";
-import { MongoServerError } from 'mongodb';
-import { User } from "../db/userModel.js";
 
 
 //GET ALL
-// export const getAllContacts = async (req, res, next) => {
-//     try {
-//         const contacts = await listContacts();
-//         res.status(200).json(contacts);
-//     } catch(error) {
-//         next(error);
-//     }
-// };
-
 export const getAllContacts = async (req, res, next) => {
     try {
-        // Отримання ID поточного користувача
         const userId = req.user._id;
-
-        // Запит на отримання контактів, що належать поточному користувачу
         const contacts = await Contact.find({ owner: userId });
-
         res.status(200).json(contacts);
     } catch(error) {
         next(error);
@@ -33,7 +18,6 @@ export const getAllContacts = async (req, res, next) => {
 };
 
 //GET by ID
-
 export const getOneContact = async (req, res) => {
     const { id } = req.params;
     
@@ -71,7 +55,6 @@ export const deleteContact = async (req, res, next) => {
 };
 
 //POST
-
 export const createContact = async (req, res, next) => {
     const { error, value } = createContactSchema.validate(req.body);
     if (error) {
@@ -101,7 +84,6 @@ export const updateContact = async (req, res) => {
     const { body } = req;
 
     try {
-        
         if (Object.keys(body).length === 0) {
             return res.status(400).json({ message: 'Body must have at least one field' });
         }

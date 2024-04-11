@@ -37,7 +37,7 @@ export const registerUser = async (req, res) => {
     }
 };
 
-  export const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
     const { SECRET_KEY } = process.env;
   
     const { error } = loginSchema.validate(req.body);
@@ -61,7 +61,6 @@ export const registerUser = async (req, res) => {
   
       const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '12h' });
   
-      // Збереження токену в користувача в базі даних
       user.token = token;
       await user.save();
   
@@ -80,7 +79,6 @@ export const logoutUser = async (req, res) => {
     }
 
     const userId = req.user._id;
-
     const user = await User.findById(userId);
 
     if (!user) {
