@@ -6,13 +6,27 @@ import { Types } from 'mongoose';
 import { Contact } from "../db/contactModel.js";
 
 
-//GET ALL
+//GET ALL with pagination
 export const getAllContacts = async (req, res, next) => {
     try {
-        const userId = req.user._id;
-        const contacts = await Contact.find({ owner: userId });
-        res.status(200).json(contacts);
-    } catch(error) {
+        const ownerId = req.user._id;
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const contacts = await Contact.find({ owner: ownerId }).skip(skip).limit(limit);
+
+        const totalContacts = await Contact.countDocuments({ owner: ownerId });
+
+        res.status(200).json({
+            page,
+            limit,
+            totalContacts,
+            totalPages: Math.ceil(totalContacts / limit),
+            data: contacts
+        });
+    } catch (error) {
         next(error);
     }
 };
