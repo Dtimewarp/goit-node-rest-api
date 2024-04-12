@@ -7,10 +7,11 @@ import { Contact } from "../db/contactModel.js";
 
 
 //GET ALL with pagination
+
+
 export const getAllContacts = async (req, res, next) => {
     try {
         const ownerId = req.user._id;
-
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;
@@ -75,7 +76,6 @@ export const filterFavoriteContacts = async (req, res, next) => {
         next(error);
     }
 };
-
 
 //DELETE
 export const deleteContact = async (req, res, next) => {
