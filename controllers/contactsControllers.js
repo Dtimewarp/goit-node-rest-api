@@ -56,6 +56,27 @@ export const getOneContact = async (req, res) => {
     });
 };
 
+//GET filter by FAVOURITE(by owner)
+export const filterFavoriteContacts = async (req, res, next) => {
+    try {
+        const ownerId = req.user._id; 
+
+        const { favorite } = req.query;
+
+        const filter = { owner: ownerId };
+        if (favorite) {
+            filter.favorite = favorite === 'true'; 
+        }
+
+        const contacts = await Contact.find(filter);
+
+        res.status(200).json(contacts);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 //DELETE
 export const deleteContact = async (req, res, next) => {
     const { id } = req.params;
