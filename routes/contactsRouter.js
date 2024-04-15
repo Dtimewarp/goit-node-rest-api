@@ -9,6 +9,7 @@ import {
   filterFavoriteContacts
 } from "../controllers/contactsControllers.js";
 import { verifyToken } from "../helpers/tokenCheck.js";
+import { isValidId } from "../helpers/idValidation.js";
 
 
 
@@ -24,15 +25,15 @@ contactsRouter.get("/", verifyToken, (req, res, next) => {
 });
 
 
-contactsRouter.get("/:id", verifyToken, getOneContact);
+contactsRouter.get("/:id", verifyToken, isValidId, getOneContact);
 
-contactsRouter.delete("/:id", verifyToken, deleteContact);
+contactsRouter.delete("/:id", verifyToken, isValidId, deleteContact);
 
 contactsRouter.post("/", verifyToken, createContact);
 
-contactsRouter.put("/:id", verifyToken, updateContact);
+contactsRouter.put("/:id", verifyToken, isValidId, updateContact);
 
-contactsRouter.patch("/:contactId/favourite", verifyToken, updateContactStatus)
+contactsRouter.patch("/:id/favourite",  verifyToken, isValidId, updateContactStatus)
 
 
 export default contactsRouter;

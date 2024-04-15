@@ -15,7 +15,7 @@ export const verifyToken = async (req, res, next) => {
     try {
         const decodedToken = jwt.verify(token, SECRET_KEY);
         const userId = decodedToken.userId;
-        console.log(userId);
+        // console.log(userId);
         
         const user = await User.findById(userId);
         

@@ -12,19 +12,39 @@ export async function listContacts() {
     }
 }
 
+// export async function getContactById(contactId) {
+//     try {
+//         const contacts = await listContacts();
+//         const contact = contacts.find(({ id }) => id === contactId);
+//         return contact || null;
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
 export async function getContactById(contactId) {
     try {
-        const contacts = await listContacts();
-        const contact = contacts.find(({ id }) => id === contactId);
+        const contact = await Contact.findById(contactId);
         return contact || null;
     } catch (error) {
         console.log(error);
     }
 }
 
-export async function removeContact(contactId) {
+// export async function removeContact(contactId) {
+//     try {
+//         const removedContact = await Contact.findByIdAndDelete(contactId);
+//         if (!removedContact) return null;
+        
+//         return removedContact;
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+export async function removeContact(contactId, ownerId) {
     try {
-        const removedContact = await Contact.findByIdAndDelete(contactId);
+        const removedContact = await Contact.findOneAndDelete({ _id: contactId, owner: ownerId });
         if (!removedContact) return null;
         
         return removedContact;
@@ -42,23 +62,51 @@ export async function addContact(name, email, phone, ownerId) {
     }
 }
 
-export async function updateContactById(id, newData) {
+// export async function updateContactById(id, newData) {
+//     try {
+//         const updatedContact = await Contact.findByIdAndUpdate(
+//             id,
+//             newData,
+//             { new: true } 
+//         );
+//         return updatedContact;
+//     } catch (error) {
+//         throw new Error('Failed to update contact');
+//     }
+// }
+
+export async function updateContactById(id, ownerId, newData) {
     try {
-        const updatedContact = await Contact.findByIdAndUpdate(
-            id,
+        const updatedContact = await Contact.findOneAndUpdate(
+            { _id: id, owner: ownerId },
             newData,
-            { new: true } 
+            { new: true }
         );
         return updatedContact;
     } catch (error) {
+        console.error(error);
         throw new Error('Failed to update contact');
     }
 }
 
+// export async function updateStatusContact(contactId, newData) {
+//     try {
+//         const updatedContact = await Contact.findByIdAndUpdate(
+//             contactId,
+//             { $set: newData },
+//             { new: true }
+//         );
+//         return updatedContact;
+//     } catch (error) {
+//         console.error(error);
+//         throw new Error("Failed to update contact status");
+//     }
+// }
+
 export async function updateStatusContact(contactId, newData) {
     try {
-        const updatedContact = await Contact.findByIdAndUpdate(
-            contactId,
+        const updatedContact = await Contact.findOneAndUpdate(
+            { _id: contactId },
             { $set: newData },
             { new: true }
         );
