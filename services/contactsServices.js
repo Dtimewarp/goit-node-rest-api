@@ -1,5 +1,3 @@
-// import { promises as fs } from "fs";
-
 import { Contact } from "../db/contactModel.js";
 
 
@@ -35,9 +33,9 @@ export async function removeContact(contactId) {
     }
 }
 
-export async function addContact(name, email, phone) {
+export async function addContact(name, email, phone, ownerId) {
     try {
-        const newContact = await Contact.create({ name, email, phone });
+        const newContact = await Contact.create({ name, email, phone, owner: ownerId });
         return newContact;
     } catch (error) {
         console.log(error);

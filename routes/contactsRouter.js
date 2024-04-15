@@ -5,21 +5,34 @@ import {
   deleteContact,
   createContact,
   updateContact,
-  updateContactStatus
+  updateContactStatus,
+  filterFavoriteContacts
 } from "../controllers/contactsControllers.js";
+import { verifyToken } from "../helpers/tokenCheck.js";
+
+
+
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/", verifyToken, (req, res, next) => {
+  if (req.query.favorite === 'true') {
+      filterFavoriteContacts(req, res, next);
+  } else {
+      getAllContacts(req, res, next);
+  }
+});
 
-contactsRouter.get("/:id", getOneContact);
 
-contactsRouter.delete("/:id", deleteContact);
+contactsRouter.get("/:id", verifyToken, getOneContact);
 
-contactsRouter.post("/", createContact);
+contactsRouter.delete("/:id", verifyToken, deleteContact);
 
-contactsRouter.put("/:id", updateContact);
+contactsRouter.post("/", verifyToken, createContact);
 
-contactsRouter.patch("/:contactId/favourite", updateContactStatus)
+contactsRouter.put("/:id", verifyToken, updateContact);
+
+contactsRouter.patch("/:contactId/favourite", verifyToken, updateContactStatus)
+
 
 export default contactsRouter;
