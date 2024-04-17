@@ -1,4 +1,5 @@
 node_modules/
+jsArchive/
 .env
 .idea
 .vscode
