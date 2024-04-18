@@ -1,38 +1,42 @@
-import mongoose from "mongoose";
-import gravatar from "gravatar";
+import mongoose from 'mongoose';
+import gravatar from 'gravatar';
 
 const userSchema = new mongoose.Schema(
-    {
-        password: {
-            type: String,
-            required: [true, "Password is required"],
-    },
-        email: {
-            type: String,
-            required: [true, "Email is required"],
-            unique: true,
-    },
-        subscription: {
-            type: String,
-            enum: ["starter", "pro", "business"],
-            default: "starter",
-    },
-        token: {
-            type: String,
-            default: null,
-    },
-        avatarURL: {
-            type: String
-    },
-    },
-{ versionKey: false }
+	{
+		password: {
+			type: String,
+			required: [true, 'Password is required'],
+		},
+		email: {
+			type: String,
+			required: [true, 'Email is required'],
+			unique: true,
+		},
+		subscription: {
+			type: String,
+			enum: ['starter', 'pro', 'business'],
+			default: 'starter',
+		},
+		token: {
+			type: String,
+			default: null,
+		},
+		avatarURL: {
+			type: String,
+		},
+	},
+	{ versionKey: false }
 );
 
 userSchema.pre('save', function (next) {
-    if (!this.avatarURL && this.email) {
-        this.avatarURL = gravatar.url(this.email, { s: '200', r: 'pg', d: 'monsterid' });
-    }
-    next();
+	if (!this.avatarURL && this.email) {
+		this.avatarURL = gravatar.url(this.email, {
+			s: '200',
+			r: 'pg',
+			d: 'monsterid',
+		});
+	}
+	next();
 });
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model('User', userSchema);
