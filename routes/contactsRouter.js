@@ -22,13 +22,9 @@ contactsRouter.get('/', verifyToken, (req, res, next) => {
 });
 
 contactsRouter.get('/:id', verifyToken, isValidId, getOneContact);
-
 contactsRouter.delete('/:id', verifyToken, isValidId, deleteContact);
-
 contactsRouter.post('/', verifyToken, createContact);
-
 contactsRouter.put('/:id', verifyToken, isValidId, updateContact);
-
 contactsRouter.patch(
 	'/:id/favourite',
 	verifyToken,
