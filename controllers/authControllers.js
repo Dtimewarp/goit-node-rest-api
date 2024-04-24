@@ -71,6 +71,45 @@ export const registerUser = async (req, res) => {
 	}
 };
 
+// export const loginUser = async (req, res) => {
+// 	const { SECRET_KEY } = process.env;
+
+// 	const { error } = loginSchema.validate(req.body);
+// 	if (error) {
+// 		return res.status(400).json({ message: error.details[0].message });
+// 	}
+
+// 	const { email, password } = req.body;
+
+// 	try {
+// 		const user = await User.findOne({ email });
+
+// 		if (!user) {
+// 			return res.status(401).json({ message: 'Email or password is wrong' });
+// 		}
+
+// 		const isPasswordValid = await bcrypt.compare(password, user.password);
+// 		if (!isPasswordValid) {
+// 			return res.status(401).json({ message: 'Email or password is wrong' });
+// 		}
+
+// 		const token = jwt.sign({ userId: user._id }, SECRET_KEY, {
+// 			expiresIn: '12h',
+// 		});
+
+// 		user.token = token;
+// 		await user.save();
+
+// 		res.status(200).json({
+// 			token,
+// 			user: { email: user.email, subscription: user.subscription },
+// 		});
+// 	} catch (error) {
+// 		console.error(error);
+// 		res.status(500).json({ message: 'Server Error' });
+// 	}
+// };
+
 export const loginUser = async (req, res) => {
 	const { SECRET_KEY } = process.env;
 
@@ -93,12 +132,16 @@ export const loginUser = async (req, res) => {
 			return res.status(401).json({ message: 'Email or password is wrong' });
 		}
 
+		// Перевірка, чи підтверджена електронна пошта
+		if (!user.verify) {
+			return res.status(401).json({ message: 'Email is not verified' });
+		}
+
 		const token = jwt.sign({ userId: user._id }, SECRET_KEY, {
 			expiresIn: '12h',
 		});
 
-		user.token = token;
-		await user.save();
+		await User.findByIdAndUpdate(user._id, { token });
 
 		res.status(200).json({
 			token,
