@@ -8,7 +8,7 @@ import {
 	updateContactStatus,
 	filterFavoriteContacts,
 } from '../controllers/contactsControllers.js';
-import { verifyToken } from '../helpers/tokenCheck.js';
+import { verifyToken } from '../helpers/tokenVerify.js';
 import { isValidId } from '../helpers/idValidation.js';
 
 const contactsRouter = express.Router();
