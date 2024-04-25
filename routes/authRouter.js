@@ -7,6 +7,7 @@ import {
 	logoutUser,
 	getCurrentUser,
 	updateSubscription,
+	resendVerificationEmail
 } from '../controllers/authControllers.js';
 import { verifyToken } from '../helpers/tokenVerify.js';
 import { verifyEmail } from '../helpers/emailVerify.js';
@@ -18,6 +19,7 @@ const upload = multer({ dest: 'tmp/' });
 authRouter.post('/register', registerUser);
 
 authRouter.get('/verify/:verificationToken', verifyEmail);
+authRouter.post('/verify', resendVerificationEmail);
 
 authRouter.post('/login', loginUser);
 authRouter.post('/logout', verifyToken, logoutUser);
